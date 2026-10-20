@@ -58,8 +58,6 @@ A status line command gets neither the rate limits as the engine measures them n
 
 The width comes from the terminal itself: the script finds the pseudo-terminal of the `claude` process, so a docked pane does not shrink it. If that fails it falls back to the width the mod last saw.
 
-If `~/.claude/hooks/caveman-statusline.sh` exists, its badge is drawn on the left. Without it the left side is empty.
-
 ## Limitations
 
 - The circles use Nerd Font glyphs (`circle-slice`). Without a Nerd Font in the terminal they show as empty boxes.
