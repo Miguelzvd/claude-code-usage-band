@@ -5,16 +5,16 @@ A Claude Code mod that keeps your rate limits and context size in view, on the s
 Three small bars sit flush right on the terminal's last row:
 
 ```
-5h ━━━━━─ 88% · 29m | 7d ━━━━━─ 77% · 1d06 | ctx ━━━─── 42%
+88% ━━━━━─ 29m · 5h | 77% ━━━━━─ 1d06 · 7d | 42% ━━━─── ctx
 ```
 
-- **5h** and **7d**: how much of the 5-hour and 7-day rate limits is left, with the time until each resets.
+- **5h** and **7d**: how much of the 5-hour and 7-day rate limits is left, with the time until each resets. Each band reads: percentage, bar, time left, then the window.
 - **ctx**: how much of the model's context window is in use, the same figure as `/context` (the status line's `used_percentage`).
 - Bars are green above 50% left, yellow down to 20%, red below. `ctx` is red when the window is more than 80% full.
 - On a narrow terminal the bars give way to circles, one per band, with the percentage:
 
 ```
-5h 󰪤 88% | 7d 󰪣 77% | ctx 󰪤 85%
+󰪤 88% 5h | 󰪣 77% 7d | 󰪤 85% ctx
 ```
 
 The bars always align to the edge of the whole terminal, even when a pane such as a file tree is docked beside the transcript.

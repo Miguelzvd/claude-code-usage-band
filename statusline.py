@@ -126,13 +126,13 @@ def render(items, compact: bool) -> str:
     for label, percent, goodness, reset in items:
         color = bar_color(goodness)
         if compact:
-            parts.append(f"{DIM}{label} {RESET}{color}{circle(percent)}{RESET}{DIM} {round(percent)}%{RESET}")
+            parts.append(f"{color}{circle(percent)}{RESET}{DIM} {round(percent)}% {label}{RESET}")
             continue
         filled = round(percent / 100 * BAR_WIDTH)
-        summary = " \u00b7 ".join(s for s in (f"{round(percent)}%", reset) if s)
+        tail = " \u00b7 ".join(x for x in (reset, label) if x)
         parts.append(
-            f"{DIM}{label} {RESET}{color}{'\u2501' * filled}{RESET}"
-            f"{DIM}{'\u2500' * (BAR_WIDTH - filled)} {summary}{RESET}"
+            f"{DIM}{round(percent)}% {RESET}{color}{'\u2501' * filled}{RESET}"
+            f"{DIM}{'\u2500' * (BAR_WIDTH - filled)} {tail}{RESET}"
         )
     return f"{DIM} | {RESET}".join(parts)
 
