@@ -1,0 +1,5 @@
+__pycache__/
+state.json
+.state-cache.json
+tsconfig.json
+.claude-plugin/types/
