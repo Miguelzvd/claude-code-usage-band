@@ -24,7 +24,7 @@ The bars always align to the edge of the whole terminal, even when a pane such a
 In a Claude Code terminal session:
 
 ```
-/plugin install usage-band --marketplace Miguelzvd/claude-code-usage-band
+/plugin install usage-band --marketplace Miguelzvd/miguelzvd-claude-code-plugins
 ```
 
 Answer `y` to add the marketplace, then pick a scope.
@@ -32,7 +32,7 @@ Answer `y` to add the marketplace, then pick a scope.
 From a shell:
 
 ```
-claude plugin install usage-band --marketplace Miguelzvd/claude-code-usage-band
+claude plugin install usage-band --marketplace Miguelzvd/miguelzvd-claude-code-plugins
 ```
 
 Then point the status line at the script, in `~/.claude/settings.json`. Use the path where the mod is installed:
