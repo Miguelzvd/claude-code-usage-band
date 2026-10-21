@@ -12,8 +12,15 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-CAVEMAN = Path.home() / ".claude" / "hooks" / "caveman-statusline.sh"
+# some installs keep the caveman script in hooks/, others directly in ~/.claude
+CAVEMAN_PATHS = (
+    Path.home() / ".claude" / "hooks" / "caveman-statusline.sh",
+    Path.home() / ".claude" / "caveman-statusline.sh",
+)
 BAR_WIDTH = 6
+# bar glyphs; a backslash inside an f-string expression breaks Python < 3.12
+HEAVY = "\u2501"
+LIGHT = "\u2500"
 # below this many free cells the bars give way to circles
 # Nerd Font circle-outline, then circle-slice-1..8 (full): one cell, fills it
 CIRCLES = [chr(0xF0766)] + [chr(c) for c in range(0xF0A9E, 0xF0AA6)]
@@ -30,11 +37,12 @@ CACHE = HERE / ".state-cache.json"
 
 
 def caveman_badge(payload: str) -> str:
-    if not CAVEMAN.is_file():
+    caveman = next((path for path in CAVEMAN_PATHS if path.is_file()), None)
+    if caveman is None:
         return ""
     try:
         run = subprocess.run(
-            ["bash", str(CAVEMAN)], input=payload, capture_output=True, text=True, timeout=2
+            ["bash", str(caveman)], input=payload, capture_output=True, text=True, timeout=2
         )
         return run.stdout.strip("\n")
     except (OSError, subprocess.SubprocessError):
@@ -131,8 +139,8 @@ def render(items, compact: bool) -> str:
         filled = round(percent / 100 * BAR_WIDTH)
         tail = " \u00b7 ".join(x for x in (reset, label) if x)
         parts.append(
-            f"{DIM}{round(percent)}% {RESET}{color}{'\u2501' * filled}{RESET}"
-            f"{DIM}{'\u2500' * (BAR_WIDTH - filled)} {tail}{RESET}"
+            f"{DIM}{round(percent)}% {RESET}{color}{HEAVY * filled}{RESET}"
+            f"{DIM}{LIGHT * (BAR_WIDTH - filled)} {tail}{RESET}"
         )
     return f"{DIM} | {RESET}".join(parts)
 
