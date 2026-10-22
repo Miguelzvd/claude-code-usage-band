@@ -41,7 +41,7 @@ Then point the status line at the script, in `~/.claude/settings.json`. Use the 
 {
   "statusLine": {
     "type": "command",
-    "command": "bash ~/.claude/mods/usage-band/statusline.sh",
+    "command": "node ~/.claude/mods/usage-band/statusline.js",
     "refreshInterval": 1
   }
 }
@@ -54,13 +54,13 @@ Then point the status line at the script, in `~/.claude/settings.json`. Use the 
 
 ## How it works
 
-A status line command gets neither the rate limits as the engine measures them nor the terminal's width. The mod saves the limits to `state.json` after every turn, and `statusline.py` reads them each time the status line is drawn. The context figure comes straight from the status line's own input.
+A status line command gets neither the rate limits as the engine measures them nor the terminal's width. The mod saves the limits to `state.json` after every turn, and `statusline.js` reads them each time the status line is drawn. The context figure comes straight from the status line's own input.
 
-The width comes from the terminal itself: the script finds the pseudo-terminal of the `claude` process, so a docked pane does not shrink it. If that fails it falls back to the width the mod last saw.
+The width is the one the mod last saw, saved in `state.json`; the script uses the terminal's own width when Node reports one.
 
 ## Limitations
 
 - The circles use Nerd Font glyphs (`circle-slice`). Without a Nerd Font in the terminal they show as empty boxes.
-- The width lookup reads `/proc`, so it works on Linux only. Elsewhere the bars use the width the mod saved, which a docked pane can narrow.
+- The width is the transcript's, which a docked pane can narrow.
 - Rate limits exist only on a subscription: with none, only `ctx` is drawn.
 - `state.json` is shared by every open session, so a session with no limits yet shows the last ones written.

@@ -9,8 +9,8 @@ const isHidden = atom({ plugin: 'usage-band', key: 'isHidden' } as const, false)
 const toLimits = (raw: readonly Limit[]): Limit[] =>
   raw.map(({ kind, percentUsed, resetsAt }) => ({ kind, percentUsed, resetsAt }))
 
-// The bars are drawn by statusline.sh, on the status line beside the caveman
-// badge. A status line command gets neither the rate limits as the engine
+// The bars are drawn by statusline.js, on the status line.
+// A status line command gets neither the rate limits as the engine
 // measures them nor the terminal's width, so the mod keeps both in state.json
 // for it. The width is the one the footer was last drawn at: a render hook may
 // not write, so it is kept here and a timer writes it soon after a resize.

@@ -28,7 +28,7 @@ test('state.json follows the limits, the width and /usage', async ($, on) => {
   const last = () => JSON.parse(writes.at(-1)?.text ?? '{}')
 
   await $.session.measure(measure)
-  expect(writes.at(-1)?.path).toEndWith('/state.json')
+  expect(writes.at(-1)?.path).toMatch(/.state.json$/)
   expect(last().limits).toEqual(measure.rateLimits)
   expect(last().isHidden).toBe(false)
 

@@ -12,7 +12,7 @@ Guidance for AI agents working in this repository.
 - `hooks/hooks.json`: lists the hooks module, `./register.tsx`.
 - `hooks/register.tsx`: the hooks module. It saves the rate limits and the transcript width to `state.json` and registers the `/usage-band` command.
 - `hooks/register.test.ts`: tests for the hooks module.
-- `statusline.py`: the status line command. It reads `state.json` and the status line's JSON input, and prints the bars. `statusline.sh` is its wrapper.
+- `statusline.js`: the status line command, plain Node with no dependencies. It reads `state.json` and the status line's JSON input, and prints the bars.
 - `types/index.d.ts`: the `$.state` contract. Every state value the module uses is declared here.
 
 `state.json`, `.state-cache.json`, `__pycache__/`, `tsconfig.json` and `.claude-plugin/types/` are generated and stay out of git.
@@ -21,11 +21,11 @@ Guidance for AI agents working in this repository.
 
 - The hooks module has no DOM and no Node. Everything outside it goes through `$`.
 - A render hook may not write state. The width is kept in a variable and a timer writes it.
-- `statusline.py` runs on every status line redraw (`refreshInterval: 1`). Keep it fast and free of network calls.
-- The status line has no controlling tty, so `/dev/tty` does not open. The terminal width is read from the `/dev/pts/*` of an ancestor process.
+- `statusline.js` runs on every status line redraw (`refreshInterval: 1`). Keep it fast and free of network calls.
+- The status line has no controlling tty, so the width is the one the mod saved in `state.json`.
 - The layout of one band is: percentage, bar, time left, a dot, then the window label (`5h`, `7d`, `ctx`). Keep it in both `render` modes.
 - Circles use Nerd Font glyphs. Do not swap them for plain Unicode circles: those are too small.
-- Do not edit the user's `settings.json` or the caveman status line script.
+- Do not edit the user's `settings.json` or any other status line script.
 
 ## Checks
 
@@ -34,13 +34,13 @@ Run these before a commit:
 ```
 claude plugin validate .
 claude plugin test .
-python3 -I -m py_compile statusline.py
+node --check statusline.js
 ```
 
 To try the status line by hand:
 
 ```
-echo '{"context_window":{"used_percentage":42}}' | python3 -I statusline.py
+echo '{"context_window":{"used_percentage":42}}' | node statusline.js
 ```
 
 ## Commits
