@@ -33,10 +33,17 @@ const CACHE = path.join(__dirname, '.state-cache.json')
 const BAR_WIDTH = 6
 const HEAVY = '━'
 const LIGHT = '─'
-// Nerd Font circle-outline, then circle-slice-1..8 (full): one cell, fills it
-const CIRCLES = [0xf0766, ...Array.from({ length: 8 }, (_, i) => 0xf0a9e + i)].map(c =>
-  String.fromCodePoint(c),
-)
+// Icons for the compact mode, empty to full, one cell each. The default is plain
+// Unicode, which every terminal font draws (or falls back for). Nerd Font glyphs
+// are private-use codepoints: without that font they show as empty boxes, so they
+// are opt-in, USAGE_BAND_ICONS=nerd; USAGE_BAND_ICONS=blocks gives ▁▂▃▄▅▆▇█.
+const fromCodes = codes => codes.map(c => String.fromCodePoint(c))
+const ICONS = {
+  circles: fromCodes([0x25cb, 0x25d4, 0x25d1, 0x25d5, 0x25cf]),
+  blocks: fromCodes([0x2581, 0x2582, 0x2583, 0x2584, 0x2585, 0x2586, 0x2587, 0x2588]),
+  nerd: fromCodes([0xf0766, ...Array.from({ length: 8 }, (_, i) => 0xf0a9e + i)]),
+}
+const CIRCLES = ICONS[process.env.USAGE_BAND_ICONS] ?? ICONS.circles
 // cells the status line keeps free at its edges
 const MARGIN = 4
 const DIM = '\x1b[2m'

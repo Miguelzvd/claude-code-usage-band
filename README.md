@@ -60,7 +60,7 @@ The width is the one the mod last saw, saved in `state.json`; the script uses th
 
 ## Limitations
 
-- The circles use Nerd Font glyphs (`circle-slice`). Without a Nerd Font in the terminal they show as empty boxes.
+- The compact mode (narrow terminals) draws plain Unicode circles, which need no special font. Set `USAGE_BAND_ICONS=blocks` for vertical blocks, or `USAGE_BAND_ICONS=nerd` for Nerd Font glyphs; the latter show as empty boxes without a Nerd Font.
 - The width is the transcript's, which a docked pane can narrow.
 - Rate limits exist only on a subscription: with none, only `ctx` is drawn.
 - `state.json` is shared by every open session, so a session with no limits yet shows the last ones written.

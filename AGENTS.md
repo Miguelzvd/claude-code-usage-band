@@ -24,7 +24,7 @@ Guidance for AI agents working in this repository.
 - `statusline.js` runs on every status line redraw (`refreshInterval: 1`). Keep it fast and free of network calls.
 - The status line has no controlling tty, so the width is the one the mod saved in `state.json`.
 - The layout of one band is: percentage, bar, time left, a dot, then the window label (`5h`, `7d`, `ctx`). Keep it in both `render` modes.
-- Circles use Nerd Font glyphs. Do not swap them for plain Unicode circles: those are too small.
+- The default icons must be plain Unicode that any font draws. Nerd Font glyphs are private-use codepoints and stay opt-in (`USAGE_BAND_ICONS=nerd`). Do not make them the default.
 - Do not edit the user's `settings.json` or any other status line script.
 
 ## Checks
