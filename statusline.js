@@ -91,8 +91,10 @@ const circle = percent =>
 // [label, percent shown, how full is good, reset text] per band
 const meters = (state, session, payload) => {
   const out = []
-  const isHidden = state.isHidden || (session && (state.hiddenSessions ?? []).includes(session))
-  if (!isHidden) {
+  // /usage-band off hides everything; /usage hides only the limits, in its own session
+  if (state.isHidden) return out
+  const isUsageOpen = session && (state.hiddenSessions ?? []).includes(session)
+  if (!isUsageOpen) {
     const byKind = Object.fromEntries((state.limits ?? []).map(l => [l.kind, l]))
     const now = Date.now()
     for (const [label, kind] of [['5h', 'five_hour'], ['7d', 'seven_day']]) {
