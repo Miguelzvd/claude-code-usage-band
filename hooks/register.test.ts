@@ -135,3 +135,29 @@ test('a session without limits keeps the ones already written', async ($, on) =>
   expect(last.limits).toEqual(measure.rateLimits)
   expect(last.hiddenSessions).toEqual(['other'])
 })
+
+test('/usage-band style picks the look and keeps it', async ($, on) => {
+  mock.store(on)
+  on('session.id', () => ({ value: 'me' }) as never)
+  const writes: string[] = []
+  on('fs.write', ($, e) => {
+    writes.push(e.text)
+    return { value: undefined }
+  })
+  const last = () => JSON.parse(writes.at(-1) ?? '{}')
+  const style = (args: string) =>
+    $.command.run({
+      command: 'usage-band',
+      args,
+      origin: { kind: 'composer' },
+      presentation: { isFullscreen: false, columns: 80 },
+    })
+
+  expect((await style('style circles')).text).toBe('Estilo das barras: circles.')
+  expect(last().style).toBe('circles')
+  expect((await style('style auto')).text).toBe('Estilo das barras: auto.')
+  expect(last().style).toBe('auto')
+  // a bad value changes nothing and says what is accepted
+  expect((await style('style round')).text).toContain('auto|bars|circles')
+  expect(last().style).toBe('auto')
+})

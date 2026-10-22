@@ -50,6 +50,7 @@ Then point the status line at the script, in `~/.claude/settings.json`. Use the 
 ## Commands
 
 - `/usage-band` turns the bars off and on again. The choice is kept across sessions.
+- `/usage-band style auto|bars|circles` picks the look. `auto` (the default) draws bars and gives way to circles when the terminal is too narrow; `bars` and `circles` force one. The choice is kept across sessions. `USAGE_BAND_STYLE` in the environment overrides it.
 - `/usage` hides the bars in that session until your next prompt, so the built-in usage screen is not crowded.
 
 ## How it works

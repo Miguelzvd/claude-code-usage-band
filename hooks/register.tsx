@@ -21,6 +21,12 @@ const RESIZE_CHECK_MS = 150
 // /usage-band turns the bars off and on again; kept across sessions
 const COMMAND = 'usage-band'
 const OFF_KEY = 'isOff'
+// /usage-band style auto|bars|circles: auto draws bars and gives way to circles
+// when the line is too narrow; the other two force one look. Kept across sessions
+const STYLE_KEY = 'style'
+const STYLES = ['auto', 'bars', 'circles']
+type Style = (typeof STYLES)[number]
+const isStyle = (value: unknown): value is Style => STYLES.includes(value as Style)
 
 // state.json is one file for every open session: a session that has no
 // limits yet keeps the last ones written, and /usage hides the bars only in
@@ -38,6 +44,12 @@ type State = {
   isHidden: boolean
   hiddenSessions: string[]
   columns: number
+  style: Style
+}
+
+const readStyle = async ($: EngineInterface): Promise<Style> => {
+  const style = await $.store.get(STYLE_KEY)
+  return isStyle(style) ? style : 'auto'
 }
 
 const persist = async ($: EngineInterface) => {
@@ -50,6 +62,7 @@ const persist = async ($: EngineInterface) => {
     isHidden: (await $.store.get(OFF_KEY)) === true,
     hiddenSessions: ((await read($, isHidden)) ? [...others, id] : others).slice(-20),
     columns,
+    style: await readStyle($),
   }
   persistedColumns = columns
   await $.fs.write(`${$.plugin.root}/state.json`, `${JSON.stringify(state)}\n`)
@@ -90,7 +103,16 @@ export const register: Register = on => {
     return next(e)
   })
 
-  on('command.run', { command: COMMAND }, async $ => {
+  on('command.run', { command: COMMAND }, async ($, e) => {
+    const [word, choice] = e.args.trim().split(/ +/)
+    if (word === 'style') {
+      if (!isStyle(choice)) {
+        return { text: `Uso: /usage-band style ${STYLES.join('|')} (agora: ${await readStyle($)})` }
+      }
+      await $.store.set(STYLE_KEY, choice)
+      await persist($)
+      return { text: `Estilo das barras: ${choice}.` }
+    }
     const isOff = (await $.store.get(OFF_KEY)) !== true
     await $.store.set(OFF_KEY, isOff)
     await persist($)
