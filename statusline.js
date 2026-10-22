@@ -119,9 +119,11 @@ const render = (items, compact) =>
 
 // Width of the whole terminal. The width the mod saves is the transcript's, which
 // a docked pane (file tree) narrows, so the bars would stop at the pane. A status
-// line has no tty on its pipes, but on Windows it still sits on the console:
-// `mode con` reports that console's size. Elsewhere $COLUMNS, then the saved width.
+// line has no tty on its pipes: $COLUMNS, else on Windows `mode con` (the console's
+// buffer, which can be narrower than the window), else the saved width.
 const terminalColumns = () => {
+  // the engine hands the status line the terminal's width here
+  if (Number(process.env.COLUMNS) > 0) return Number(process.env.COLUMNS)
   if (process.platform === 'win32') {
     try {
       const out = execFileSync('mode.com', ['con'], { encoding: 'utf8', timeout: 500, windowsHide: true })
@@ -129,7 +131,7 @@ const terminalColumns = () => {
       if (match) return Number(match[1])
     } catch {}
   }
-  return Number(process.env.COLUMNS) || 0
+  return 0
 }
 
 const main = () => {
