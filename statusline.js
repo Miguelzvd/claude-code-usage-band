@@ -146,7 +146,8 @@ const main = () => {
   let right = render(items, false)
   if (width && right.replace(ANSI, '').length + MARGIN + 2 > width) right = render(items, true)
   const gap = width ? width - MARGIN - right.replace(ANSI, '').length : 0
-  process.stdout.write(`${' '.repeat(Math.max(2, gap))}${right}\n`)
+  // the escape first: the status line trims leading spaces, which would undo the gap
+  process.stdout.write(`${RESET}${' '.repeat(Math.max(2, gap))}${right}\n`)
 }
 
 main()
