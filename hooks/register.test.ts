@@ -1,6 +1,8 @@
 import type { RenderElement, SessionMeasureInput } from 'claude-code'
 import { expect, mock, test } from 'claude-code/testing'
 
+import { register } from './register'
+
 const measure: SessionMeasureInput = {
   context: { window: 200_000 },
   rateLimits: [
@@ -160,4 +162,30 @@ test('/usage-band style picks the look and keeps it', async ($, on) => {
   // a bad value changes nothing and says what is accepted
   expect((await style('style round')).text).toContain('auto|bars|circles')
   expect(last().style).toBe('auto')
+})
+
+// the test kit raises no settings.read, so the hook is called as the engine would
+const settingsHook = () => {
+  let hook: any
+  register(((event: string, ...rest: any[]) => {
+    if (event === 'settings.read') hook = rest.at(-1)
+  }) as never, {} as never)
+  const $ = { plugin: { name: 'usage-band', root: '/mods/usage-band' } }
+  return (e: object, merged: object) => hook($, e, async () => merged)
+}
+
+test('the merged settings carry a statusLine for the bars unless one is set', async () => {
+  const read = settingsHook()
+
+  expect(await read({ layers: [] }, { theme: 'dark' })).toEqual({
+    theme: 'dark',
+    statusLine: { type: 'command', command: 'node "/mods/usage-band/statusline.js"', refreshInterval: 1 },
+  })
+
+  // a statusLine the person set is kept
+  const mine = { statusLine: { type: 'command', command: 'mine' } }
+  expect(await read({ layers: [] }, mine)).toEqual(mine)
+
+  // one source's read is that source as loaded
+  expect(await read({ source: 'user', layers: [] }, {})).toEqual({})
 })

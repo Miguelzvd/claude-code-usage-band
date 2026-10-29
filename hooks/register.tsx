@@ -68,7 +68,23 @@ const persist = async ($: EngineInterface) => {
   await $.fs.write(`${$.plugin.root}/state.json`, `${JSON.stringify(state)}\n`)
 }
 
+// The bars need a statusLine that runs statusline.js, and an install does not
+// write one. The mod answers the engine's merged settings with its own when no
+// source sets one, so the bars show right after install without touching any
+// settings.json; a statusLine the person set wins.
+const statusLine = (root: string) => ({
+  type: 'command',
+  command: `node "${root}/statusline.js"`,
+  refreshInterval: 1,
+})
+
 export const register: Register = on => {
+  on('settings.read', async ($, e, next) => {
+    const settings = await next(e)
+    if (e.source || settings.statusLine) return settings
+    return { ...settings, statusLine: statusLine($.plugin.root) }
+  })
+
   on('session.start', async ($, e, next) => {
     await $.command.register({
       name: COMMAND,

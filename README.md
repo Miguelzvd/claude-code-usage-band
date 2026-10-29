@@ -35,13 +35,15 @@ From a shell:
 claude plugin install usage-band --marketplace Miguelzvd/miguelzvd-claude-code-plugins
 ```
 
-Then point the status line at the script, in `~/.claude/settings.json`. Use the path where the mod is installed:
+The bars show right after install, with nothing to add to `settings.json`: when no settings file sets a `statusLine`, the mod supplies one that runs its `statusline.js`.
+
+A `statusLine` you set yourself wins, and then the bars do not show. To get them back, remove yours, or point it at the script:
 
 ```json
 {
   "statusLine": {
     "type": "command",
-    "command": "node ~/.claude/mods/usage-band/statusline.js",
+    "command": "node \"$(ls -d ~/.claude/plugins/cache/claude-code-miguelzvd/usage-band/*/ | sort -V | tail -1)statusline.js\"",
     "refreshInterval": 1
   }
 }
