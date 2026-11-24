@@ -181,21 +181,27 @@ const settingsHook = () => {
     if (event === 'settings.read') hook = rest.at(-1)
   }) as never, {} as never)
   const $ = { plugin: { name: 'usage-band', root: '/mods/usage-band' } }
-  return (e: object, merged: object) => hook($, e, async () => merged)
+  // next resolves the way the engine's does: { value } or { deny }
+  return (e: object, result: object) => hook($, e, async () => result)
 }
 
 test('the merged settings carry a statusLine for the bars unless one is set', async () => {
   const read = settingsHook()
 
-  expect(await read({ layers: [] }, { theme: 'dark' })).toEqual({
-    theme: 'dark',
-    statusLine: { type: 'command', command: 'node "/mods/usage-band/statusline.js"', refreshInterval: 1 },
+  expect(await read({ layers: [] }, { value: { theme: 'dark' } })).toEqual({
+    value: {
+      theme: 'dark',
+      statusLine: { type: 'command', command: 'node "/mods/usage-band/statusline.js"', refreshInterval: 1 },
+    },
   })
 
   // a statusLine the person set is kept
-  const mine = { statusLine: { type: 'command', command: 'mine' } }
+  const mine = { value: { statusLine: { type: 'command', command: 'mine' } } }
   expect(await read({ layers: [] }, mine)).toEqual(mine)
 
   // one source's read is that source as loaded
-  expect(await read({ source: 'user', layers: [] }, {})).toEqual({})
+  expect(await read({ source: 'user', layers: [] }, { value: {} })).toEqual({ value: {} })
+
+  // a refused read stays refused
+  expect(await read({ layers: [] }, { deny: 'no' })).toEqual({ deny: 'no' })
 })

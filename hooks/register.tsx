@@ -79,10 +79,12 @@ const statusLine = (root: string) => ({
 })
 
 export const register: Register = on => {
+  // next resolves to { value } (the settings) or { deny }: the statusLine goes
+  // inside value, or the engine never sees it
   on('settings.read', async ($, e, next) => {
-    const settings = await next(e)
-    if (e.source || settings.statusLine) return settings
-    return { ...settings, statusLine: statusLine($.plugin.root) }
+    const result = await next(e)
+    if (e.source || 'deny' in result || !result.value || result.value.statusLine) return result
+    return { value: { ...result.value, statusLine: statusLine($.plugin.root) } }
   })
 
   on('session.start', async ($, e, next) => {
