@@ -60,20 +60,30 @@ test('state.json follows the limits, the width and /usage', async ($, on) => {
   await $.prompt.submit({ text: 'oi', wait: false, origin: { kind: 'composer' } })
   expect(last().hiddenSessions).toEqual([])
 
-  // /usage-band: off until typed again, through prompts too
-  const toggle = () =>
+  const band = (args: string) =>
     $.command.run({
       command: 'usage-band',
-      args: '',
+      args,
       origin: { kind: 'composer' },
       presentation: { isFullscreen: false, columns: 80 },
     })
-  expect((await toggle()).text).toBe('Barras de limite desligadas.')
+  // a bare /usage-band never hides the bars, typed once or twice
+  expect((await band('')).text).toContain('ligadas')
+  expect(last().isHidden).toBe(false)
+  expect((await band('')).text).toContain('ligadas')
+  expect(last().isHidden).toBe(false)
+  // /usage-band off: off until turned on, through prompts too
+  expect((await band('off')).text).toContain('desligadas')
   expect(last().isHidden).toBe(true)
   await $.prompt.submit({ text: 'oi', wait: false, origin: { kind: 'composer' } })
   expect(last().isHidden).toBe(true)
-  expect((await toggle()).text).toBe('Barras de limite ligadas.')
+  // a bare /usage-band turns them back on
+  expect((await band('')).text).toBe('Barras de limite ligadas.')
   expect(last().isHidden).toBe(false)
+  await band('off')
+  expect((await band('on')).text).toBe('Barras de limite ligadas.')
+  expect(last().isHidden).toBe(false)
+  expect((await band('talvez')).text).toContain('on|off')
 })
 
 test('a resize reaches state.json without waiting for a turn', async ($, on) => {

@@ -51,7 +51,7 @@ A `statusLine` you set yourself wins, and then the bars do not show. To get them
 
 ## Commands
 
-- `/usage-band` turns every bar off, `ctx` included, and on again. The choice is kept across sessions.
+- `/usage-band off` turns every bar off, `ctx` included; `/usage-band on` (or just `/usage-band`) turns them on again. A bare `/usage-band` never hides them. The choice is kept across sessions.
 - `/usage-band style auto|bars|circles` picks the look. `auto` (the default) draws bars and gives way to circles when the terminal is too narrow; `bars` and `circles` force one. The choice is kept across sessions. `USAGE_BAND_STYLE` in the environment overrides it.
 - `/usage` hides the bars in that session until your next prompt, so the built-in usage screen is not crowded.
 

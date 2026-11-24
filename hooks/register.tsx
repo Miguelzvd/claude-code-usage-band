@@ -129,10 +129,21 @@ export const register: Register = on => {
       await persist($)
       return { text: `Estilo das barras: ${choice}.` }
     }
-    const isOff = (await $.store.get(OFF_KEY)) !== true
-    await $.store.set(OFF_KEY, isOff)
-    await persist($)
-    return { text: isOff ? 'Barras de limite desligadas.' : 'Barras de limite ligadas.' }
+    // a bare /usage-band never hides the bars: someone trying the command
+    // right after install would turn them off before ever seeing them
+    if (word === 'off' || word === 'on' || !word) {
+      const isOff = word === 'off'
+      const wasOff = (await $.store.get(OFF_KEY)) === true
+      await $.store.set(OFF_KEY, isOff)
+      await persist($)
+      if (isOff) return { text: 'Barras de limite desligadas. /usage-band on liga de novo.' }
+      return {
+        text: wasOff
+          ? 'Barras de limite ligadas.'
+          : `Barras de limite ligadas (estilo: ${await readStyle($)}). /usage-band off desliga.`,
+      }
+    }
+    return { text: `Uso: /usage-band [on|off] | /usage-band style ${STYLES.join('|')}` }
   })
 
   on('prompt.submit', async ($, e, next) => {
